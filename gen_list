@@ -1,0 +1,4 @@
+python src/image_generator.py --color 170,0,0     --size 1080x2340 --output output/checker_r checker --block 4 --format ppm_p3
+python src/image_generator.py --color 0,170,0     --size 1080x2340 --output output/checker_g checker --block 4 --format ppm_p3
+python src/image_generator.py --color 0,0,170     --size 1080x2340 --output output/checker_b checker --block 4 --format ppm_p3
+python src/image_generator.py --color 170,170,170 --size 1080x2340 --output output/checker_w checker --block 4 --format ppm_p3
