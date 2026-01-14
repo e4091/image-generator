@@ -114,40 +114,60 @@ def build_gradient(
     return image
 
 
+def save_ppm(image: Image.Image, output: Path, variant: str) -> None:
+    width, height = image.size
+    max_value = 255
+    pixels = list(image.getdata())
+    header = f"P{variant}\n{width} {height}\n{max_value}\n"
+    if variant == "3":
+        body = " ".join(str(value) for pixel in pixels for value in pixel)
+        output.write_text(header + body + "\n", encoding="ascii")
+    elif variant == "6":
+        output.write_bytes(header.encode("ascii") + bytes([value for pixel in pixels for value in pixel]))
+    else:
+        raise ValueError(f"Unknown PPM variant: {variant}")
+
+
 def save_outputs(image: Image.Image, output: Path, formats: Iterable[str]) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     for fmt in formats:
         target = output.with_suffix(f".{fmt}")
-        image.save(target, format=fmt.upper())
+        if fmt == "ppm_p3":
+            save_ppm(image, target, "3")
+        elif fmt == "ppm_p6":
+            save_ppm(image, target, "6")
+        else:
+            image.save(target, format=fmt.upper())
 
 
 def parse_formats(value: str) -> list[str]:
     formats = [part.strip().lower() for part in value.split(",") if part.strip()]
-    allowed = {"png", "bmp"}
+    allowed = {"png", "bmp", "ppm_p3", "ppm_p6"}
     for fmt in formats:
         if fmt not in allowed:
-            raise argparse.ArgumentTypeError("Formats must be png and/or bmp.")
+            raise argparse.ArgumentTypeError("Formats must be png, bmp, ppm_p3, or ppm_p6.")
     return formats
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Generate image patterns.")
-    parser.add_argument("--size", default="1080x2340", type=parse_size)
-    parser.add_argument("--color", default="255,0,0", type=parse_rgb)
-    parser.add_argument("--output", default="output/pattern")
-    parser.add_argument("--formats", default="png,bmp", type=parse_formats)
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--size", default="1080x2340", type=parse_size)
+    common.add_argument("--color", default="255,0,0", type=parse_rgb)
+    common.add_argument("--output", default="output/pattern")
+    common.add_argument("--formats", default="png", type=parse_formats)
 
+    parser = argparse.ArgumentParser(description="Generate image patterns.", parents=[common])
     subparsers = parser.add_subparsers(dest="pattern", required=True)
 
-    subparsers.add_parser("solid", help="Solid color fill.")
+    subparsers.add_parser("solid", help="Solid color fill.", parents=[common])
 
-    checker = subparsers.add_parser("checker", help="Checker pattern.")
+    checker = subparsers.add_parser("checker", help="Checker pattern.", parents=[common])
     checker.add_argument("--block", type=int, default=2)
 
-    lines = subparsers.add_parser("lines", help="Alternating line pattern.")
+    lines = subparsers.add_parser("lines", help="Alternating line pattern.", parents=[common])
     lines.add_argument("--line-height", type=int, default=1)
 
-    gradient = subparsers.add_parser("gradient", help="Channel gradients.")
+    gradient = subparsers.add_parser("gradient", help="Channel gradients.", parents=[common])
     gradient.add_argument("--channels", required=True, choices=["r", "g", "b", "rg", "gb", "br", "rgb"])
     gradient.add_argument(
         "--direction",
