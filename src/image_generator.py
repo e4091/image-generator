@@ -56,11 +56,20 @@ def apply_channel_mask(color: RGB, channels: str) -> RGB:
     )
 
 
+def invert_channels(color: RGB, channels: str) -> RGB:
+    channels = channels.lower()
+    return RGB(
+        255 - color.r if "r" in channels else 0,
+        255 - color.g if "g" in channels else 0,
+        255 - color.b if "b" in channels else 0,
+    )
+
+
 def build_checker(size: Size, color: RGB, block: int, channels: str) -> Image.Image:
     masked_color = apply_channel_mask(color, channels)
     image = Image.new("RGB", (size.width, size.height))
     pixels = image.load()
-    inverted = masked_color.invert()
+    inverted = invert_channels(masked_color, channels)
     for y in range(size.height):
         for x in range(size.width):
             if ((x // block) + (y // block)) % 2 == 0:
