@@ -47,14 +47,24 @@ def build_solid(size: Size, color: RGB) -> Image.Image:
     return Image.new("RGB", (size.width, size.height), (color.r, color.g, color.b))
 
 
-def build_checker(size: Size, color: RGB, block: int) -> Image.Image:
+def apply_channel_mask(color: RGB, channels: str) -> RGB:
+    channels = channels.lower()
+    return RGB(
+        color.r if "r" in channels else 0,
+        color.g if "g" in channels else 0,
+        color.b if "b" in channels else 0,
+    )
+
+
+def build_checker(size: Size, color: RGB, block: int, channels: str) -> Image.Image:
+    masked_color = apply_channel_mask(color, channels)
     image = Image.new("RGB", (size.width, size.height))
     pixels = image.load()
-    inverted = color.invert()
+    inverted = masked_color.invert()
     for y in range(size.height):
         for x in range(size.width):
             if ((x // block) + (y // block)) % 2 == 0:
-                pixels[x, y] = (color.r, color.g, color.b)
+                pixels[x, y] = (masked_color.r, masked_color.g, masked_color.b)
             else:
                 pixels[x, y] = (inverted.r, inverted.g, inverted.b)
     return image
@@ -163,6 +173,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     checker = subparsers.add_parser("checker", help="Checker pattern.", parents=[common])
     checker.add_argument("--block", type=int, default=2)
+    checker.add_argument(
+        "--channels",
+        default="rgb",
+        choices=["r", "g", "b", "rg", "gb", "br", "rgb"],
+        help="Limit checker colors to selected channels.",
+    )
 
     lines = subparsers.add_parser("lines", help="Alternating line pattern.", parents=[common])
     lines.add_argument("--line-height", type=int, default=1)
@@ -189,7 +205,7 @@ def main() -> None:
     if args.pattern == "solid":
         image = build_solid(size, color)
     elif args.pattern == "checker":
-        image = build_checker(size, color, args.block)
+        image = build_checker(size, color, args.block, args.channels)
     elif args.pattern == "lines":
         image = build_lines(size, color, args.line_height)
     elif args.pattern == "gradient":

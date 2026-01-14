@@ -22,8 +22,8 @@ python src/image_generator.py solid --color 10,20,30 --size 1080x2340 --output o
 
 ```bash
 python src/image_generator.py checker --block 1 --color 120,200,80 --output output/checker_1
-python src/image_generator.py checker --block 2 --color 120,200,80 --output output/checker_2
-python src/image_generator.py checker --block 4 --color 120,200,80 --output output/checker_4
+python src/image_generator.py checker --block 2 --channels r --color 120,200,80 --output output/checker_r_2
+python src/image_generator.py checker --block 4 --channels g --color 120,200,80 --output output/checker_g_4
 ```
 
 ### Alternating lines
