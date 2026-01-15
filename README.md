@@ -42,3 +42,10 @@ python src/image_generator.py gradient --channels br --direction diag_rl --desce
 ```
 
 Outputs are written as PNG by default. Use `--formats png,bmp,ppm_p3,ppm_p6` to request other formats.
+
+### PPM to PNG conversion
+
+```bash
+python src/image_generator.py convert --input output/pattern.ppm
+python src/image_generator.py convert --input output/pattern.ppm --output output/pattern_converted.png
+```

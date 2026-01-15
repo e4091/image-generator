@@ -168,6 +168,12 @@ def parse_formats(value: str) -> list[str]:
     return formats
 
 
+def convert_ppm_to_png(input_path: Path, output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with Image.open(input_path) as image:
+        image.save(output_path, format="PNG")
+
+
 def build_parser() -> argparse.ArgumentParser:
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--size", default="1080x2340", type=parse_size)
@@ -201,6 +207,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     gradient.add_argument("--descending", action="store_true")
 
+    convert = subparsers.add_parser("convert", help="Convert a PPM file to PNG.")
+    convert.add_argument("--input", required=True, type=Path)
+    convert.add_argument("--output", type=Path)
+
     return parser
 
 
@@ -210,6 +220,11 @@ def main() -> None:
 
     size = args.size
     color = args.color
+
+    if args.pattern == "convert":
+        output_path = args.output or args.input.with_suffix(".png")
+        convert_ppm_to_png(args.input, output_path)
+        return
 
     if args.pattern == "solid":
         image = build_solid(size, color)
