@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
+from markdownify import markdownify
 from PIL import Image
 
 
@@ -174,6 +175,13 @@ def convert_ppm_to_png(input_path: Path, output_path: Path) -> None:
         image.save(output_path, format="PNG")
 
 
+def convert_html_to_markdown(input_path: Path, output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    html_content = input_path.read_text(encoding="utf-8")
+    markdown_content = markdownify(html_content)
+    output_path.write_text(markdown_content, encoding="utf-8")
+
+
 def build_parser() -> argparse.ArgumentParser:
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--size", default="1080x2340", type=parse_size)
@@ -211,6 +219,10 @@ def build_parser() -> argparse.ArgumentParser:
     convert.add_argument("--input", required=True, type=Path)
     convert.add_argument("--output", type=Path)
 
+    html_to_md = subparsers.add_parser("html2md", help="Convert an HTML file to Markdown.")
+    html_to_md.add_argument("--input", required=True, type=Path)
+    html_to_md.add_argument("--output", type=Path)
+
     return parser
 
 
@@ -224,6 +236,11 @@ def main() -> None:
     if args.pattern == "convert":
         output_path = args.output or args.input.with_suffix(".png")
         convert_ppm_to_png(args.input, output_path)
+        return
+
+    if args.pattern == "html2md":
+        output_path = args.output or args.input.with_suffix(".md")
+        convert_html_to_markdown(args.input, output_path)
         return
 
     if args.pattern == "solid":
