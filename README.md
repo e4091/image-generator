@@ -49,3 +49,10 @@ Outputs are written as PNG by default. Use `--formats png,bmp,ppm_p3,ppm_p6` to 
 python src/image_generator.py convert --input output/pattern.ppm
 python src/image_generator.py convert --input output/pattern.ppm --output output/pattern_converted.png
 ```
+
+### HTML to Markdown conversion
+
+```bash
+python src/image_generator.py html2md --input docs/page.html
+python src/image_generator.py html2md --input docs/page.html --output docs/page.md
+```
