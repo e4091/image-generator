@@ -50,6 +50,12 @@ python src/image_generator.py convert --input output/pattern.ppm
 python src/image_generator.py convert --input output/pattern.ppm --output output/pattern_converted.png
 ```
 
+### HTML to Markdown conversion
+
+```bash
+python src/image_generator.py html2md --input docs/page.html
+python src/image_generator.py html2md --input docs/page.html --output docs/page.md
+```
 ## Verilog documentation generator
 
 Generate a Mermaid diagram and Markdown documentation from a Verilog file:
