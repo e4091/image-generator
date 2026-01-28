@@ -49,3 +49,13 @@ Outputs are written as PNG by default. Use `--formats png,bmp,ppm_p3,ppm_p6` to 
 python src/image_generator.py convert --input output/pattern.ppm
 python src/image_generator.py convert --input output/pattern.ppm --output output/pattern_converted.png
 ```
+
+## Verilog documentation generator
+
+Generate a Mermaid diagram and Markdown documentation from a Verilog file:
+
+```bash
+python src/verilog_docgen.py --input path/to/design.v --output-dir output/verilog_docs
+```
+
+The output markdown is written to `output/verilog_docs/verilog_design.md` by default.
