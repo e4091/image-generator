@@ -56,3 +56,12 @@ python src/image_generator.py convert --input output/pattern.ppm --output output
 python src/image_generator.py html2md --input docs/page.html
 python src/image_generator.py html2md --input docs/page.html --output docs/page.md
 ```
+## Verilog documentation generator
+
+Generate a Mermaid diagram and Markdown documentation from a Verilog file:
+
+```bash
+python src/verilog_docgen.py --input path/to/design.v --output-dir output/verilog_docs
+```
+
+The output markdown is written to `output/verilog_docs/verilog_design.md` by default.
